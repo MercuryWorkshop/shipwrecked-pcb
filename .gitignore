@@ -1,0 +1,7 @@
+PCB-Schematic/shipwreckedpcb/~shipwreckedpcb.kicad_sch.lck
+*.lck
+PCB-Schematic/shipwreckedpcb/shipwreckedpcb-backups
+PCB-Schematic/shipwreckedpcb/shipwreckedpcb-backups/*
+#auto_saved_files#
+PCB-Schematic/shipwreckedpcb/\#auto_saved_files\#
+Code/contacts.json

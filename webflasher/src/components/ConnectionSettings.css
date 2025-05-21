@@ -1,0 +1,41 @@
+.connection-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.connection-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: var(--surface-variant);
+  border-radius: 4px;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.status-indicator::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--error);
+}
+
+.status-indicator.connected::before {
+  background-color: var(--success);
+}
+
+.error-message {
+  color: var(--error);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}

@@ -1,0 +1,52 @@
+name: Build and Create Release
+
+on:
+  push:
+    branches:
+      - deploy
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Install mpy-cross
+        run: |
+          pip install mpy-cross
+      
+      - name: Build firmware
+        working-directory: ./Code
+        run: make compile
+      
+      - name: Get version
+        id: get_version
+        run: echo "version=$(cat ./Code/VERSION)" >> $GITHUB_OUTPUT
+      
+      - name: Create release ZIP
+        working-directory: ./Code/build
+        run: zip -r ../firmware.zip .
+      
+      - name: Checkout firmware-zips branch
+        run: |
+          git fetch origin firmware-zips:firmware-zips || git checkout -b firmware-zips
+          git checkout firmware-zips
+      
+      - name: Add firmware ZIP to branch
+        run: |
+          mkdir -p firmware-zips
+          cp ./Code/firmware.zip firmware-zips/firmware.zip
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add firmware-zips/firmware.zip
+          git commit -m "Add firmware v${{ steps.get_version.outputs.version }}"
+          git push origin firmware-zips

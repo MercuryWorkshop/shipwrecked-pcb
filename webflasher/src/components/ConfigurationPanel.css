@@ -1,0 +1,64 @@
+.config-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background-color: var(--surface-variant);
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-alpha);
+  outline: none;
+}
+
+.form-group input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.status-message {
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: var(--surface-variant);
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.status-message.error {
+  background-color: var(--error);
+  color: var(--text);
+}
+
+.config-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
