@@ -41,7 +41,7 @@ class Message:
         self.message = message
         self.signature = signature
         self._signature_valid = None
-    
+
     def is_signature_valid(self) -> bool:
         return True
         if self._signature_valid is not None:
@@ -72,7 +72,7 @@ class Message:
             decoded = "message decode error"
             # hack so that message gets rejected as old
             creation_timestamp = 0
-        
+
         # logger.debug(f"free memory after unpacking: {gc.mem_free()} bytes")
         # gc.collect()
         # logger.debug(f"free memory after second collect: {gc.mem_free()} bytes")
@@ -82,7 +82,7 @@ class Message:
         # print(f"Decoded message: {decoded}")
         # print(f"Free memory after decoding: {gc.mem_free()} bytes")
         # decoded = decoded.rstrip('\x00')  # Remove padding null bytes
-        return cls(creation_timestamp, decoded, signature)  
+        return cls(creation_timestamp, decoded, signature)
 
     def to_bytes(self) -> bytes:
         """Convert the message to raw bytes"""
@@ -93,7 +93,7 @@ class Message:
         message_padded = self.message + '\x00' * (195 - length)  # Pad with null bytes
         message_bytes = message_padded.encode('utf-8')
         return struct.pack(MSG_FMT, reserved, self.signature, self.creation_timestamp, length, message_bytes)
-    
+
     def __repr__(self) -> str:
         return f"Message(creation_timestamp={self.creation_timestamp}, message='{self.message}', signature_valid={self.is_signature_valid()}, signature={self.signature} (r={self.signature.r}, s={self.signature.s}))"
 
@@ -110,7 +110,7 @@ class App(badge.BaseApp):
         except Exception as e:
             self.logger.error(f"Failed to load last displayed timestamp: {e}")
             return 1
-    
+
     def set_last_displayed_message_timestamp(self, timestamp: int) -> None:
         try:
             with open(badge.utils.get_data_dir() + "/last_displayed_timestamp.txt", "w") as f:
@@ -129,7 +129,7 @@ class App(badge.BaseApp):
         except Exception as e:
             self.logger.error(f"Failed to load last packet from file: {e}")
         return None
-    
+
     def on_open(self) -> None:
         message = self.get_last_received_message()
         if message.is_signature_valid():
@@ -145,7 +145,7 @@ class App(badge.BaseApp):
         #     self.last_button = True
         # else:
         #     self.last_button = False
-        
+
         if self.received_message:
             self.logger.info(f"Displaying message: {self.received_message}")
             badge.display.fill(1)
@@ -166,6 +166,9 @@ class App(badge.BaseApp):
                 asyncio.create_task(self.notify())
             self.set_last_displayed_message_timestamp(self.received_message.creation_timestamp)
             self.received_message = None
+        elif badge.input.get_button(badge.input.Buttons.SW4):
+            from internal_os.internalos import InternalOS
+            InternalOS.instance().radio.add_to_tx_queue(0xffff, 3, b"TEST HG MESSAGE!")
 
     def wrap_message(self, message: str, size: int) -> list[str]:
         max_chars_per_line = 16 if size == 24 else 25
@@ -241,7 +244,7 @@ class App(badge.BaseApp):
         and that its signature is valid.
         """
         return message.creation_timestamp > self.get_last_displayed_message_timestamp() and message.is_signature_valid()
-    
+
     def should_receive_message(self, message: Message) -> bool:
         """
         Confirm that the message is newer than the last one we received,
