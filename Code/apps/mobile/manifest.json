@@ -1,0 +1,6 @@
+{
+    "displayName": "Mobile",
+    "logoPath": "messenger.pbm",
+    "permissions": ["notifications:write", "rawHardware:write", "radio:write", "uart:write", "contacts:write"],
+    "appNumber": 11
+}  
