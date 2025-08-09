@@ -5,8 +5,8 @@ class App(badge.BaseApp):
     def on_open(self):
         self.result = None
         badge.display.fill(1) #white bg
-        badge.display.nice_text("Coin flip", 0, 0, font=badge.display.nice_fonts[24])
-        badge.display.nice_text("Press any button to flip", 0, 100, font=badge.display.nice_fonts[24])
+        badge.display.nice_text("Coin flip", 50, 0, font=badge.display.nice_fonts[24])
+        badge.display.nice_text("Press any button to flip", 10, 100, font=badge.display.nice_fonts[18])
         badge.display.show()
 
     def loop(self):
@@ -15,8 +15,8 @@ class App(badge.BaseApp):
             if badge.input.get_button(btn):
                 self.result = "Heads" if random.getrandbits(1) else "Tails"
                 badge.display.fill(1)
-                badge.display.nice_text(self.result, 0, 0, font=badge.display.nice_fonts[24])
-                badge.display.nice_text("Press to flip again", 0, 100, font=badge.display.nice_fonts[16])
+                badge.display.nice_text(self.result, 50, 0, font=badge.display.nice_fonts[24])
+                badge.display.nice_text("Press to flip again", 15, 100, font=badge.display.nice_fonts[18])
                 badge.display.show()
                 break
         
