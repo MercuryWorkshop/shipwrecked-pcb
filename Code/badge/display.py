@@ -196,18 +196,25 @@ def import_pbm(file_path: str) -> framebuf.FrameBuffer:
     :return: FrameBuffer object containing the image.
     this converter is known to work: https://convertio.co/png-pbm/
     """
-    with open(file_path, 'rb') as f:
-        # Read the header
-        header = f.readline().strip()
-        if header != b'P4':
-            raise ValueError("File is not a valid binary PBM file.")
-        # Read the width and height
-        dimensions = f.readline().strip()
-        width, height = map(int, dimensions.split())
-        # Read the pixel data
-        pixel_data = bytearray(~b & 0xFF for b in f.read()) # the e-ink means the PBM format swaps black and white
-        if len(pixel_data) != (width * height + 7) // 8:
-            raise ValueError("Pixel data does not match specified dimensions.")
-        # Create a FrameBuffer from the pixel data
-        fb = framebuf.FrameBuffer(pixel_data, width, height, framebuf.MONO_HLSB)
+    try:
+        with open(file_path, 'rb') as f:
+            # Read the header
+            header = f.readline().strip()
+            if header != b'P4':
+                raise ValueError("File is not a valid binary PBM file.")
+            # Read the width and height
+            dimensions = f.readline().strip()
+            width, height = map(int, dimensions.split())
+            # Read the pixel data
+            pixel_data = bytearray(~b & 0xFF for b in f.read()) # the e-ink means the PBM format swaps black and white
+            if len(pixel_data) != (width * height + 7) // 8:
+                raise ValueError("Pixel data does not match specified dimensions.")
+            # Create a FrameBuffer from the pixel data
+            fb = framebuf.FrameBuffer(pixel_data, width, height, framebuf.MONO_HLSB)
+    except Exception as e:
+        if file_path == "/missingtex.pbm":
+            print("everything's all fucked up!!")
+            raise e
+        print("Error loading PBM, loading placeholder")
+        return import_pbm("/missingtex.pbm")
     return fb
