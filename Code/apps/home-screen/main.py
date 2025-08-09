@@ -26,11 +26,11 @@ class App(badge.BaseApp):
         """
         Beep the buzzer + flash LED.
         """
-        badge.buzzer.tone(1000, 0.025)
-        badge.utils.set_led_pwm(10000)
+        badge.buzzer.tone(442, 0.05)
+        badge.utils.set_led_pwm(8192)
 
     def loop(self) -> None:
-        if badge.input.get_button(badge.input.Buttons.SW11):
+        if badge.input.get_button(badge.input.Buttons.SW12):
             self.old_button_b = True
         else:
             if self.old_button_b:
@@ -42,7 +42,7 @@ class App(badge.BaseApp):
                 badge.utils.set_led(False)
             self.old_button_b = False
 
-        if badge.input.get_button(badge.input.Buttons.SW12):
+        if badge.input.get_button(badge.input.Buttons.SW11):
             self.old_button_f = True
         else:
             if self.old_button_f:

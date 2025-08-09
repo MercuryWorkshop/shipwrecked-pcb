@@ -42,18 +42,13 @@ class App(badge.BaseApp):
         self.spike_tiles = {17, 27, 43, 59}
 
     def loop(self) -> None:
-        """
-        The main game loop, called repeatedly for each frame.
-        Optimized to minimize operations and memory allocation per frame.
-        """
-        badge.utils.set_led_pwm(32768)
-        # Get button inputs from the badge. These are efficient hardware reads.
-        l = badge.input.get_button(badge.input.Buttons.SW18)
-        r = badge.input.get_button(badge.input.Buttons.SW13)
-        u = badge.input.get_button(badge.input.Buttons.SW8)
-        d = badge.input.get_button(badge.input.Buttons.SW16)
-        z = badge.input.get_button(badge.input.Buttons.SW9)
-        x = badge.input.get_button(badge.input.Buttons.SW7)
+        # Get button inputs from the badge
+        l = badge.input.get_button(badge.input.Buttons.SW12);
+        r = badge.input.get_button(badge.input.Buttons.SW11);
+        u = badge.input.get_button(badge.input.Buttons.SW13);
+        d = badge.input.get_button(badge.input.Buttons.SW14);
+        z = badge.input.get_button(badge.input.Buttons.SW15);
+        x = badge.input.get_button(badge.input.Buttons.SW16);
 
         # Set the inputs for the PICO-8 game engine and advance the game state.
         # The performance here largely depends on the complexity of Celeste's internal logic.
@@ -65,77 +60,37 @@ class App(badge.BaseApp):
         # This is a necessary step for full frame redraws on the display.
         badge.display.fill(1)
 
-        # Fixed display parameters, calculated once per loop (or could be class attributes).
-        # Keeping them local for clarity, their impact on performance is minimal.
-        tile_display_size = 12
-        offset_x = (200 - (16 * tile_display_size)) // 2
-        offset_y = (200 - (16 * tile_display_size)) // 2
+        # Get the string representation of the current game map from the Celeste object
+        # The __str__ method in Celeste.py generates a 16x16 grid of 2-character strings
+        # representing game tiles, separated by newlines.
+        game_map_str = str(self.p8.game)
+
+        # Split the string into individual lines (rows of game tiles)
+        # .strip() is used to remove any potential trailing empty line from the split
+        lines = game_map_str.strip().split('\n')
 
         # Get direct references to PICO8 and Celeste game instances.
         p8 = self.p8
         g = self.p8.game # 'g' refers to the Celeste game instance
 
-        # --- 1. Draw base tiles (walls, ground, spikes) ---
-        # Optimized drawing: Only draw black pixels for solid/spike tiles.
-        # White background is implicitly handled by badge.display.fill(1) at the start of the loop.
-        for row_idx in range(16):
-            for col_idx in range(16):
-                # Get the raw tile ID from the game's map memory.
-                tile = p8.mget(g.room.x * 16 + col_idx, g.room.y * 16 + row_idx)
-                
-                # Check tile flags (solid block or foreground) or if it's a spike.
-                # `p8.fget` is part of the game engine's logic.
-                if p8.fget(tile, 0) or p8.fget(tile, 4) or tile in self.spike_tiles:
-                    # Calculate pixel coordinates.
-                    x_pixel = offset_x + (col_idx * tile_display_size)
-                    y_pixel = offset_y + (row_idx * tile_display_size)
-                    
-                    # Draw a filled black square. This is an efficient drawing operation.
-                    badge.display.fill_rect(x_pixel, y_pixel, tile_display_size, tile_display_size, 0)
+        # Iterate through each row and column of the game map
+        for row_idx, line in enumerate(lines):
+            # Each 'line' in the game_map_str contains 16 game tiles.
+            # Since each game tile is represented by 2 characters (e.g., '██', '  '),
+            # the character length of each line is 16 * 2 = 32 characters.
+            for tile_col_idx in range(16): # Iterate for 16 game tiles horizontally
+                # Extract the 2-character string that represents the current game tile
+                # For example, if tile_col_idx is 0, it gets chars 0-1; if 1, chars 2-3, etc.
+                char_pair = line[tile_col_idx * 2 : (tile_col_idx + 1) * 2]
 
-        # --- 2. Draw objects on top of the tiles ---
-        # Iterate through all active objects in the game.
-        for o in g.objects:
-            # Skip objects marked for destruction.
-            if o is None:
-                continue
-            
-            # Check if the object type has a defined text representation and is visible.
-            if type(o) in self.object_text_repr and o.spr != 0:
-                # Retrieve the text string from the pre-computed dictionary.
-                obj_text = self.object_text_repr[type(o)]
+                # Calculate the pixel coordinates (x, y) for where to draw this game tile
+                # Each game tile will occupy (2 * char_pixel_width) horizontally and char_pixel_height vertically
+                x_pixel = tile_col_idx * (2 * char_pixel_width)
+                y_pixel = row_idx * char_pixel_height
 
-                # Calculate object's tile position (rounded for display).
-                ox_tile = round(o.x / 8)
-                oy_tile = round(o.y / 8)
+                # Draw the 2-character string (representing the game tile) on the display
+                # color=0 for black text.
+                badge.display.text(char_pair, x_pixel, y_pixel, color=0)
 
-                # Only draw if the object is within the visible map area.
-                if 0 <= ox_tile <= 15 and 0 <= oy_tile <= 15:
-                    # Calculate pixel coordinates for the main object sprite.
-                    obj_x_pixel = offset_x + (ox_tile * tile_display_size)
-                    obj_y_pixel = offset_y + (oy_tile * tile_display_size)
-
-                    # Draw the text representation. `badge.display.text` can be a bottleneck
-                    # if font rendering is computationally heavy.
-                    badge.display.text(obj_text, obj_x_pixel, obj_y_pixel, 0)
-
-                    # Handle drawing additional text for multi-tile objects or visual effects.
-                    # These specific checks maintain the visual fidelity of the original Celeste.
-                    if type(o) == g.platform and ox_tile + 1 <= 15:
-                        badge.display.text(obj_text, obj_x_pixel + tile_display_size, obj_y_pixel, 0)
-                    elif type(o) == g.fly_fruit:
-                        if ox_tile - 1 >= 0:
-                            badge.display.text(' »', obj_x_pixel - tile_display_size, obj_y_pixel, 0)
-                        if ox_tile + 1 <= 15:
-                            badge.display.text('« ', obj_x_pixel + tile_display_size, obj_y_pixel, 0)
-                    elif type(o) == g.fake_wall:
-                        if ox_tile + 1 <= 15:
-                            badge.display.text(obj_text, obj_x_pixel + tile_display_size, obj_y_pixel, 0)
-                        if oy_tile + 1 <= 15:
-                            badge.display.text(obj_text, obj_x_pixel, obj_y_pixel + tile_display_size, 0)
-                        if ox_tile + 1 <= 15 and oy_tile + 1 <= 15:
-                            badge.display.text(obj_text, obj_x_pixel + tile_display_size, obj_y_pixel + tile_display_size, 0)
-
-        # Push the rendered frame to the actual display.
-        # This is typically the most time-consuming step for many displays, especially e-ink.
-        badge.display.show()
+        # After all drawing commands, refresh the actual display
+        badge.display.show();
