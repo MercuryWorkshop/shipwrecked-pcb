@@ -163,7 +163,7 @@ class App(badge.BaseApp):
                 wrapped_message = self.wrap_message(self.received_message.message, font_size)
             parsed_time = time.localtime(self.received_message.creation_timestamp - (4 * 3600))  # Convert to local time (UTC-4)
             title_size = 42 if font_size == 24 else 32
-            badge.display.nice_text("Announced:", 0, 0, title_size)
+            badge.display.nice_text("Message:", 0, 0, title_size)
             badge.display.nice_text(f"At:{parsed_time[3]:02}:{parsed_time[4]:02}:{parsed_time[5]:02} {self.num_to_weekday(parsed_time[6])}", 0, title_size + 1, font_size)
             badge.display.nice_text('\n'.join(wrapped_message), 0, title_size + 2 + font_size, font_size)
             badge.display.show()

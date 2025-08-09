@@ -139,12 +139,15 @@ import gc
 print(f"Mem before fonts: {gc.mem_free()}")
 
 nice_fonts = {
+    12: MicroFont("fonts/victor_B_12.mfnt"),
+    15: MicroFont("fonts/victor_B_15.mfnt"),
     18: MicroFont("fonts/victor_B_18.mfnt"),
     24: MicroFont("fonts/victor_B_24.mfnt"),
     32: MicroFont("fonts/victor_B_32.mfnt"),
     42: MicroFont("fonts/victor_B_42.mfnt"),
     54: MicroFont("fonts/victor_B_54.mfnt"),
     68: MicroFont("fonts/victor_B_68.mfnt"),
+    70: MicroFont("fonts/victor_B_70.mfnt"),
 }
 
 print(f"Mem after fonts: {gc.mem_free()}")
@@ -152,7 +155,7 @@ print(f"Mem after fonts: {gc.mem_free()}")
 def nice_text(text: str, x: int, y: int, font: Union[int, MicroFont] = 18, color: int = 0, *, rot: int = 0, x_spacing: int = 0, y_spacing: int = 0) -> None:
     """
     Draw text using a nice font.
-    Included fonts are Victor Mono Bold in 18, 24, 32, 42, 54, and 68 point sizes.
+    Included fonts are Victor Mono Bold in 12, 15, 18, 24, 32, 42, 54, 68, and 70 point sizes.
     If these are not adequate, you can provide a MicroFont instance with your own font.
     :param text: The text to draw.
     :param x: X coordinate of the text.
@@ -165,7 +168,7 @@ def nice_text(text: str, x: int, y: int, font: Union[int, MicroFont] = 18, color
     """
     if not _is_display_allowed():
         raise RuntimeError("Cannot call display functions from a backgrounded app context.")
-    
+
     if isinstance(font, int):
         font = nice_fonts.get(font)
     if not font:
@@ -173,7 +176,7 @@ def nice_text(text: str, x: int, y: int, font: Union[int, MicroFont] = 18, color
 
     font.write(text, internal_os.display.display.framebuf, framebuf.MONO_HLSB, width, height, x, y, color, rot=rot, x_spacing=x_spacing, y_spacing=y_spacing)
 
-    
+
 
 def blit(fb: framebuf.FrameBuffer, x: int, y: int) -> None:
     """
@@ -208,4 +211,3 @@ def import_pbm(file_path: str) -> framebuf.FrameBuffer:
         # Create a FrameBuffer from the pixel data
         fb = framebuf.FrameBuffer(pixel_data, width, height, framebuf.MONO_HLSB)
     return fb
-    

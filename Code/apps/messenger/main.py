@@ -167,8 +167,14 @@ class App(badge.BaseApp):
             self.set_last_displayed_message_timestamp(self.received_message.creation_timestamp)
             self.received_message = None
         elif badge.input.get_button(badge.input.Buttons.SW4):
-            from internal_os.internalos import InternalOS
-            InternalOS.instance().radio.add_to_tx_queue(0xffff, 3, b"TEST HG MESSAGE!")
+            message = "HACK THE PLANET"
+            message_bytes = message.encode("utf-8")
+            message_bytes = message_bytes.ljust(179, b"\0")
+
+            timestamp = int(time.time())
+            full_msg = struct.pack(MSG_FMT, 0, range(32), range(32), timestamp, len(message), message_bytes)
+
+            badge.radio._send_msg(b'\xff\xff', b'\x00\x0B', full_msg)
 
     def wrap_message(self, message: str, size: int) -> list[str]:
         max_chars_per_line = 16 if size == 24 else 25
