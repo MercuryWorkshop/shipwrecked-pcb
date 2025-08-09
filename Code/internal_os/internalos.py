@@ -63,12 +63,16 @@ class InternalOS:
         self.utils = BadgeUtils()
         self.uart = BadgeUART()
 
+        self.display.fill(1)
+        self.display.show(full=True)
+
         # software
         gc.enable()
         self.contacts = ContactsManager(self)
         self.notifs = NotifManager()
         self.apps = AppManager(self.buttons, self.display)
 
+        self.display_refresh_count = 0 # used to occasionally force a full refresh
 
         # Step 2:
         asyncio.create_task(self.apps.scan_forever(interval=15)) # TODO: lower this interval in prod?

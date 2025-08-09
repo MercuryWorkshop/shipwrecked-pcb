@@ -1,6 +1,6 @@
 {
     "displayName": "2048",
     "logoPath": "2048.pbm",
-    "appNumber": 420,
+    "appNumber": 2048,
     "permissions": []
 }

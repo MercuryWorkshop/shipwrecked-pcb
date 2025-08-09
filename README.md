@@ -13,6 +13,7 @@ CFW (custom firmware) for the Shipwrecked PCB Badges.
 - Extra font sizes
 - Exclusive alert tone
 - Custom badge ID
+- Partial update support for the E-ink display
 - (Coming soon) Peer-to-peer messaging
 
 ## Bugfixes

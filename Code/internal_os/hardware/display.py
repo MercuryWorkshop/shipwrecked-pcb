@@ -46,7 +46,6 @@ class BadgeDisplay:
     """
     Manages the display.
     TODO: make this and einkdriver async
-    TODO: add partial refresh support
     TODO: if app is not in fullscreen mode, give it a smaller framebuffer and blit it over the main framebuffer
     """
     def __init__(self):
@@ -87,11 +86,16 @@ class BadgeDisplay:
         self.logger.debug(f"Resetting idle timer from thread {_thread.get_ident()} (self.is_asleep={self.is_asleep})")
         self.last_action = utime.ticks_ms()
 
-    def show(self):
+    def show(self, full=False):
         """Push the contents of the internal framebuffer to the display"""
         self.reset_idle_timer()
         with LockWrapper(self.display_lock):
-            self.display.display()
+            if full:
+                # force a full refresh every 10 calls or if explicitly requested
+                self.logger.debug("Force refreshing display")
+                self.display.display()
+            else:
+                self.display.display(full_refresh=False)
         self.reset_idle_timer()
 
     def sleep_disp(self):

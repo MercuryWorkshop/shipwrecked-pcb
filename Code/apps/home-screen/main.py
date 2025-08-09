@@ -78,7 +78,7 @@ class App(badge.BaseApp):
             app_y = (i // 3) * 78 + 12
             self.draw_app_icon(app, app_x, app_y, self.cursor_pos == i)
         self.logger.debug(f"Cursor position: {self.cursor_pos}, total apps: {len(self.get_apps_to_show())}")
-        badge.display.show()
+        internal_os.display.show(full=True)
 
     def get_apps_to_show(self):
         apps = list(filter(lambda app: app.app_path != "/apps/home-screen", internal_os.apps.registered_apps))
@@ -109,6 +109,7 @@ class App(badge.BaseApp):
         Launch the specified app.
         :param app_repr: The AppRepr instance representing the app to launch.
         """
+        internal_os.display.show(full=True)
         self.logger.info(f"Launching app: {app_repr.display_name}")
         asyncio.create_task(internal_os.apps.launch_app(app_repr))
         while internal_os.apps.fg_app_running:

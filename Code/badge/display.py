@@ -30,15 +30,23 @@ def sleep():
         raise RuntimeError("Cannot call display functions from a backgrounded app context.")
     internal_os.display.sleep_disp()
 
-def show() -> None:
+def show(force_full_refresh: bool = False) -> None:
     """
     Push the contents of the internal framebuffer to the display.
-    This does a full refresh of the E-Ink (takes a few seconds).
     NOTE: YOUR DRAWING WILL NOT DO ANYTHING UNTIL YOU CALL THIS FUNCTION!
+    On CFW, this will only refresh the display every 10th call or if explicitly requested.
+    OFW will always refresh the display, so if your app targets CFW, please try managing your display updates to avoid ghosting.
     """
     if not _is_display_allowed():
         raise RuntimeError("Cannot call display functions from a backgrounded app context.")
-    internal_os.display.show()
+
+
+    internal_os.display_refresh_count += 1
+    # every 10th call, or if explicitly requested, do a full refresh
+    if internal_os.display_refresh_count % 10 == 0:
+        internal_os.display.show(full=True)
+    else:
+        internal_os.display.show(full=force_full_refresh)
 
 def fill(color: int) -> None:
     """
@@ -156,7 +164,8 @@ def nice_text(text: str, x: int, y: int, font: Union[int, MicroFont] = 18, color
     """
     Draw text using a nice font.
     Included fonts are Victor Mono Bold in 12, 18, 24, 32, 42, 54, 68, and 70pt sizes, and Victor Mono Regular in 15pt size.
-    If these are not adequate, you can provide a MicroFont instance with your own font.
+    The 12, 15, and 70pt fonts are exclusive to Mercury Workshop CFW. If your app targets OFW, refrain from using these sizes.
+    If the included fonts are not adequate, you can provide a MicroFont instance with your own font.
     :param text: The text to draw.
     :param x: X coordinate of the text.
     :param y: Y coordinate of the text.
