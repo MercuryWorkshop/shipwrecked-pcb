@@ -32,6 +32,14 @@ class App(badge.BaseApp):
         badge.display.nice_text(f"{contact.pronouns}", 0, name_height, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
         badge.display.nice_text(f"0x{contact.badge_id:0>4x}", 200-badge.display.nice_fonts[24].max_width*6, name_height, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
         badge.display.nice_text('\n'.join(handle_wrapped), 0, name_height + 24, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
+
+        try:
+            with open("/icon.pbm", 'rb') as logo_file:
+                pass
+            fb = badge.display.import_pbm("/icon.pbm");
+            badge.display.blit(fb, 200-64, 200-64);
+        except OSError as e:
+            pass
         badge.display.show()
 
     def decide_name_size(self, name: str, y_space_available=130):
@@ -42,6 +50,8 @@ class App(badge.BaseApp):
         font = None
         max_chars_for_sizes = {size: badge.display.width // font.max_width for size, font in badge.display.nice_fonts.items()}
         for size, max_chars in sorted(max_chars_for_sizes.items(), key=lambda x: x[0], reverse=True):
+            if size > 54:
+                continue
             if size < 24:
                 # we don't want to use sizes smaller than 24 for names
                 continue
