@@ -1,6 +1,7 @@
 import badge
 from micropython import mem_info
-from internal_os.hardware.utils import InternalOS, unique_id
+from internal_os.internalos import InternalOS
+from internal_os.hardware.utils import unique_id
 
 internal_os = InternalOS.instance()
 import struct

@@ -1,5 +1,4 @@
-from internal_os.internalos import BadgeUART
-from internal_os.internalos import InternalOS
+from internal_os.internalos import BadgeUART, InternalOS
 internal_os = InternalOS.instance()
 
 def present() -> bool:
