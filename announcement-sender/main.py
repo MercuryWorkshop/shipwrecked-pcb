@@ -48,7 +48,7 @@ device = belay.Device(selected_port)
 
 @device.setup
 def setup():
-    print("Shipwrecked PCB Badge CFW starting...")
+    print("Shipwrecked PCB Badge OS starting...")
     from internal_os import internalos
     import time
     import asyncio

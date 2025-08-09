@@ -18,6 +18,15 @@ class App(badge.BaseApp):
     def render_display(self, contact) -> None:
         badge.display.fill(1)  # Clear the display
 
+        # draw cat first so anything else drawn later will be on top
+        try:
+            with open("/icon.pbm", 'rb') as logo_file:
+                pass
+            fb = badge.display.import_pbm("/icon.pbm");
+            badge.display.blit(fb, 200-64, 200-64);
+        except OSError as e:
+            pass
+
         # text rendering: decide on a font size and line breaks for the name
         # if the name has no spaces, go as low as font size 32 before inserting hyphens where needed
         # if the name has spaces, break at the middlemost space first, then the rest of the spaces, then insert hyphens as needed
@@ -29,18 +38,11 @@ class App(badge.BaseApp):
         self.logger.debug(f"In space {name_space_avail}, using size {font.height} with {name}")
         name_height = font.height * (name.count('\n') + 1)
         badge.display.nice_text(name, 0, 0, font=font, color=0, rot=0, x_spacing=0, y_spacing=0)
-        badge.display.nice_text(f"{contact.pronouns}", 0, name_height-4, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
+        badge.display.nice_text(f"({contact.pronouns})", 0, name_height-4, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
         badge.display.nice_text('\n'.join(handle_wrapped), 0, name_height + 32, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
 
-        badge.display.nice_text(f"Badge ID: 0x{contact.badge_id:0>4x}", 0, 172, font=18, color=0, rot=0, x_spacing=0, y_spacing=0)
+        badge.display.nice_text(f"Badge ID: 0x{contact.badge_id:0>4x}", 0, 170, font=18, color=0, rot=0, x_spacing=0, y_spacing=0)
 
-        try:
-            with open("/icon.pbm", 'rb') as logo_file:
-                pass
-            fb = badge.display.import_pbm("/icon.pbm");
-            badge.display.blit(fb, 200-64, 200-64);
-        except OSError as e:
-            pass
         badge.display.show()
 
     def decide_name_size(self, name: str, y_space_available=130):

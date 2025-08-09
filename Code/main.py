@@ -1,4 +1,4 @@
-print("Shipwrecked PCB Badge OS starting...")
+print("Shipwrecked PCB Badge CFW starting...")
 
 from internal_os import internalos
 
