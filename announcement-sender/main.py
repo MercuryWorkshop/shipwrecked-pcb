@@ -48,7 +48,7 @@ device = belay.Device(selected_port)
 
 @device.setup
 def setup():
-    print("Shipwrecked PCB Badge OS starting...")
+    print("Shipwrecked PCB Badge CFW starting...")
     from internal_os import internalos
     import time
     import asyncio
@@ -57,14 +57,14 @@ def setup():
 
 @device.task
 def send_announcement(msg):
-    
+
     # async def send_thing():
     #     print("waiting to send...")
     #     await asyncio.sleep(10)
     #     print(f"HEY! sending thing: {msg}")
     #     with open("/data/messenger/message_to_send.bin", "wb") as f:
     #         f.write(msg)
-        
+
     #     await badge.apps.launch_app(badge.apps.get_app_by_path("/apps/messenger"))
     # asyncio.create_task(send_thing())
     # badge.run_forever()

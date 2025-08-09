@@ -29,9 +29,10 @@ class App(badge.BaseApp):
         self.logger.debug(f"In space {name_space_avail}, using size {font.height} with {name}")
         name_height = font.height * (name.count('\n') + 1)
         badge.display.nice_text(name, 0, 0, font=font, color=0, rot=0, x_spacing=0, y_spacing=0)
-        badge.display.nice_text(f"{contact.pronouns}", 0, name_height, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
-        badge.display.nice_text(f"0x{contact.badge_id:0>4x}", 200-badge.display.nice_fonts[24].max_width*6, name_height, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
-        badge.display.nice_text('\n'.join(handle_wrapped), 0, name_height + 24, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
+        badge.display.nice_text(f"{contact.pronouns}", 0, name_height-4, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
+        badge.display.nice_text('\n'.join(handle_wrapped), 0, name_height + 32, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
+
+        badge.display.nice_text(f"Badge ID: 0x{contact.badge_id:0>4x}", 0, 172, font=18, color=0, rot=0, x_spacing=0, y_spacing=0)
 
         try:
             with open("/icon.pbm", 'rb') as logo_file:
