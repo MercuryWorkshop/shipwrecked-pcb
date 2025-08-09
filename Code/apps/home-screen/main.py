@@ -81,7 +81,20 @@ class App(badge.BaseApp):
         badge.display.show()
 
     def get_apps_to_show(self):
-        return list(filter(lambda app: app.app_path != "/apps/home-screen", internal_os.apps.registered_apps))
+        apps = list(filter(lambda app: app.app_path != "/apps/home-screen", internal_os.apps.registered_apps))
+        badge_app = None
+        other_apps = []
+
+        for app in apps:
+            if app.app_path == "/apps/badge":
+                badge_app = app
+            else:
+                other_apps.append(app)
+
+        if badge_app:
+            return [badge_app] + other_apps
+        else:
+            return other_apps
 
     def draw_app_icon(self, app_repr, x, y, selected):
         fb = badge.display.import_pbm(app_repr.logo_path)
