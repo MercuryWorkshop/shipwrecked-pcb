@@ -30,14 +30,15 @@ class App(badge.BaseApp):
         ok = badge.input.get_button(badge.input.Buttons.SW4)
 
         if up and not self.u_was_down:
+            badge.buzzer.tone(440, 0.05)
             self.u_was_down = True
             moved = self.game.move("up")
             if moved:
                 self.renderer.render(self.game.get_grid(), self.game.get_score())
-
         self.u_was_down = up
 
         if down and not self.d_was_down:
+            badge.buzzer.tone(440, 0.05)
             self.d_was_down = True
             moved = self.game.move("down")
             if moved:
@@ -45,6 +46,7 @@ class App(badge.BaseApp):
         self.d_was_down = down
 
         if left and not self.l_was_down:
+            badge.buzzer.tone(440, 0.05)
             self.l_was_down = True
             moved = self.game.move("left")
             if moved:
@@ -52,6 +54,7 @@ class App(badge.BaseApp):
         self.l_was_down = left
 
         if right and not self.r_was_down:
+            badge.buzzer.tone(440, 0.05)
             self.r_was_down = True
             moved = self.game.move("right")
             if moved:
@@ -62,7 +65,7 @@ class App(badge.BaseApp):
             # Reset the game if OK is pressed
             self.game.reset()
             self.renderer.render(self.game.get_grid(), self.game.get_score())
-            badge.buzzer.tone(440, 0.1)
+            badge.buzzer.tone(880, 0.1)
 
 
 class Game2048:
