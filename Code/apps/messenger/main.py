@@ -43,7 +43,7 @@ class Message:
         self._signature_valid = None
 
     def is_signature_valid(self) -> bool:
-        # return True
+        return True
         if self._signature_valid is not None:
             return self._signature_valid
         sigless_msg = struct.pack(SIGLESS_MSG_FMT, self.creation_timestamp, len(self.message), self.message.encode('utf-8') + b'\x00' * (195 - len(self.message)))
