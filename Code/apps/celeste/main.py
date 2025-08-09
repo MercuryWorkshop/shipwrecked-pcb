@@ -46,19 +46,21 @@ class App(badge.BaseApp):
         The main game loop, called repeatedly for each frame.
         Optimized to minimize operations and memory allocation per frame.
         """
+        badge.utils.set_led_pwm(32768)
         # Get button inputs from the badge. These are efficient hardware reads.
-        l = badge.input.get_button(badge.input.Buttons.SW11)
-        r = badge.input.get_button(badge.input.Buttons.SW12)
-        u = badge.input.get_button(badge.input.Buttons.SW13)
-        d = badge.input.get_button(badge.input.Buttons.SW14)
-        z = badge.input.get_button(badge.input.Buttons.SW15)
-        x = badge.input.get_button(badge.input.Buttons.SW16)
+        l = badge.input.get_button(badge.input.Buttons.SW18)
+        r = badge.input.get_button(badge.input.Buttons.SW13)
+        u = badge.input.get_button(badge.input.Buttons.SW8)
+        d = badge.input.get_button(badge.input.Buttons.SW16)
+        z = badge.input.get_button(badge.input.Buttons.SW9)
+        x = badge.input.get_button(badge.input.Buttons.SW7)
 
         # Set the inputs for the PICO-8 game engine and advance the game state.
         # The performance here largely depends on the complexity of Celeste's internal logic.
         self.p8.set_inputs(l, r, u, d, z, x)
         self.p8.step()
 
+        badge.utils.set_led_pwm(65535)
         # Clear the entire display with white (color 1).
         # This is a necessary step for full frame redraws on the display.
         badge.display.fill(1)
