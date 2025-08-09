@@ -140,7 +140,7 @@ print(f"Mem before fonts: {gc.mem_free()}")
 
 nice_fonts = {
     12: MicroFont("fonts/victor_B_12.mfnt"),
-    15: MicroFont("fonts/victor_B_15.mfnt"),
+    15: MicroFont("fonts/victor_R_15.mfnt"),
     18: MicroFont("fonts/victor_B_18.mfnt"),
     24: MicroFont("fonts/victor_B_24.mfnt"),
     32: MicroFont("fonts/victor_B_32.mfnt"),
