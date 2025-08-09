@@ -1,4 +1,4 @@
-from machine import I2C, Pin, UART, unique_id
+from machine import I2C, Pin, UART
 import logging
 import asyncio
 
@@ -23,7 +23,7 @@ class BadgeUART:
         except Exception as e:
             self.logger.error(f"Error checking UART presence: {e}")
             return False
-        
+
     def try_connect(self) -> bool:
         if self.detect_badge():
             self.logger.info("Badge UART detected. Attempting to connect...")
@@ -39,10 +39,10 @@ class BadgeUART:
         else:
             self.logger.warning("Badge UART not detected.")
             return False
-        
+
     def is_connected(self) -> bool:
         return self._uart_connected
-    
+
     def send(self, data: bytes) -> None:
         if not self.is_connected():
             raise RuntimeError("UART is not connected.")

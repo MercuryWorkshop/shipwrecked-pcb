@@ -2,7 +2,8 @@ import _thread
 import asyncio
 import gc
 
-from machine import RTC, Pin, PWM, unique_id
+from machine import RTC, Pin, PWM
+from machine import unique_id as machine_unique_id
 
 from internal_os.hardware.uart import BadgeUART
 from internal_os.hardware.display import BadgeDisplay
@@ -18,6 +19,13 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
+CUSTOM_ID = 0x1337
+def unique_id():
+    if CUSTOM_ID is not None:
+        return CUSTOM_ID.to_bytes(2, 'big')
+    else:
+        return machine_unique_id()
+
 # enable error reports for errors in ISRs
 import micropython
 micropython.alloc_emergency_exception_buf(100)
@@ -28,7 +36,7 @@ class InternalOS:
     To start the badge, initialize the class, then call badge.start().
     To allow access from various contexts, this class is a singleton.
     """
-    
+
     @classmethod
     def instance(cls):
         """
@@ -38,12 +46,12 @@ class InternalOS:
         if not hasattr(cls, '_instance'):
             cls._instance = cls()
         return cls._instance
-    
+
     def start(self):
         self.setup()
         print("Badge started. Running forever...")
         self.run_forever()
-    
+
     def setup(self):
         """
         Starts the badge. Never returns.
@@ -52,7 +60,7 @@ class InternalOS:
         # 1. Initialize hardware, IRQs, state, etc.
         # 2. Schedule the needed background tasks.
         # 3. Start the asyncio event loop.
-    
+
         # Step 1:
         # hardware
         self.display = BadgeDisplay()
@@ -107,6 +115,6 @@ class InternalOS:
         The badge ID is the last 2 bytes (4 digits) of the machine.unique_id().
         """
         return unique_id().hex()[-4:]
-    
+
     def get_badge_id_int(self) -> int:
         return int.from_bytes(unique_id()[-2:], 'big')
