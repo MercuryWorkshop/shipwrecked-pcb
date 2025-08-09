@@ -20,6 +20,7 @@ def fast_cos(angle): return fast_sin(angle+90)
 
 class MicroFont:
     def __init__(self,filename,cache_index = False, cache_chars = False):
+        print(f"Loading MicroFont from {filename}")
         stream = open(filename,"rb")
         header_data = stream.read(12)
         if len(header_data) != 12:
@@ -200,7 +201,7 @@ class MicroFont:
             off_x += x_spacing + ch[2]
 
 if __name__ == "__main__":
-    font = MicroFont("victor:B:12.mfnt")
+    font = MicroFont("victor_B_12.mfnt")
     data,height,width = font.get_ch("Q")
     for i in range(height):
         print(bin(data[i]|1024))

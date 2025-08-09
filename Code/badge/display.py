@@ -155,7 +155,7 @@ print(f"Mem after fonts: {gc.mem_free()}")
 def nice_text(text: str, x: int, y: int, font: Union[int, MicroFont] = 18, color: int = 0, *, rot: int = 0, x_spacing: int = 0, y_spacing: int = 0) -> None:
     """
     Draw text using a nice font.
-    Included fonts are Victor Mono Bold in 12, 15, 18, 24, 32, 42, 54, 68, and 70 point sizes.
+    Included fonts are Victor Mono Bold in 12, 18, 24, 32, 42, 54, 68, and 70pt sizes, and Victor Mono Regular in 15pt size.
     If these are not adequate, you can provide a MicroFont instance with your own font.
     :param text: The text to draw.
     :param x: X coordinate of the text.
