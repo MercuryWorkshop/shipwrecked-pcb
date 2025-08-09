@@ -3,13 +3,12 @@ import asyncio
 import gc
 
 from machine import RTC, Pin, PWM
-from machine import unique_id as machine_unique_id
 
 from internal_os.hardware.uart import BadgeUART
 from internal_os.hardware.display import BadgeDisplay
 from internal_os.hardware.buttons import BadgeButtons
 from internal_os.hardware.radio import BadgeRadio
-from internal_os.hardware.utils import BadgeUtils
+from internal_os.hardware.utils import BadgeUtils, unique_id
 
 from internal_os.contacts import ContactsManager
 from internal_os.notifs import NotifManager
@@ -18,13 +17,6 @@ from internal_os.apps import AppManager
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
-
-CUSTOM_ID = 0x1337
-def unique_id():
-    if CUSTOM_ID is not None:
-        return CUSTOM_ID.to_bytes(2, 'big')
-    else:
-        return machine_unique_id()
 
 # enable error reports for errors in ISRs
 import micropython

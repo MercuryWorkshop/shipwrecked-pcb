@@ -1,6 +1,6 @@
 import badge
 from micropython import mem_info
-from internal_os.internalos import unique_id
+from internal_os.hardware.utils import unique_id
 import struct
 import logging
 import gc

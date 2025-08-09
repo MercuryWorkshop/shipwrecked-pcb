@@ -6,8 +6,7 @@
 # - LED
 # - radio
 
-from machine import Pin, SPI, I2C, PWM
-from internal_os.internalos import unique_id
+from machine import Pin, SPI, I2C, PWM,unique_id
 import utime
 
 spi = SPI(0, baudrate=1_000_000, polarity=0, phase=0, sck=Pin(18), mosi=Pin(19), miso=Pin(20))

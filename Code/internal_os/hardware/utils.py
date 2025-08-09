@@ -1,5 +1,12 @@
 import logging
-from machine import Pin, PWM
+from machine import Pin, PWM, unique_id as machine_unique_id
+
+CUSTOM_ID = None # CHANGE THIS IF YOU WANT A CUSTOM BADGE ID
+def unique_id():
+    if CUSTOM_ID is not None:
+        return CUSTOM_ID.to_bytes(2, 'big')
+    else:
+        return machine_unique_id()
 
 class BadgeUtils:
     def __init__(self):

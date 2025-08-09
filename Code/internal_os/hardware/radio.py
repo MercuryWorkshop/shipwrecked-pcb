@@ -1,6 +1,7 @@
 """ Abstraction of the radio driver """
 import asyncio
 from machine import I2C, Pin
+from internal_os.hardware.utils import unique_id
 import time
 
 try:
