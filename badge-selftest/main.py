@@ -6,7 +6,8 @@
 # - LED
 # - radio
 
-from machine import Pin, SPI, I2C, PWM, unique_id
+from machine import Pin, SPI, I2C, PWM
+from internal_os.internalos import unique_id
 import utime
 
 spi = SPI(0, baudrate=1_000_000, polarity=0, phase=0, sck=Pin(18), mosi=Pin(19), miso=Pin(20))
@@ -36,7 +37,7 @@ print("Displaying base image...")
 display.fill(1)  # Fill with white
 display.text("badge self-test", 10, 10, 0)
 display.text("Press any button on the badge", 10, 30, 0)
-display.text(f"Badge ID: {unique_id().hex()[-4:]}", 10, 50, 0) 
+display.text(f"Badge ID: {unique_id().hex()[-4:]}", 10, 50, 0)
 display.display()
 display.sleep()
 utime.sleep(5)  # Allow time for display to update

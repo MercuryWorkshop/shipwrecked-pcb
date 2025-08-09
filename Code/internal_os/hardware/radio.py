@@ -1,6 +1,7 @@
 """ Abstraction of the radio driver """
 import asyncio
-from machine import I2C, Pin, unique_id
+from machine import I2C, Pin
+from internal_os.internalos import unique_id
 import time
 
 try:
@@ -36,7 +37,7 @@ class Packet:
 
     def __repr__(self):
         return f"Packet(source={self.source:x}, dest={self.dest:x}, app_number={self.app_number}, data={self.data})"
-    
+
     def to_dict(self):
         """
         Convert the contact to a dictionary representation.
@@ -49,7 +50,7 @@ class Packet:
         }
 
 class BadgeRadio:
-    
+
     def __init__(self, internal_os) -> None:
         self.internal_os = internal_os
         self.logger = logging.getLogger("BadgeRadio")
@@ -80,12 +81,12 @@ class BadgeRadio:
         Sends a message over LoRa.
         Takes in app ID, and optional message type. If ommited, it's an announcement.
         """
-        
+
         """ bytes 0-1: source addr
         bytes 2-3: dest addr
         bytes 4-5: packet type
         bytes 6-254: app-specific payload """
-        
+
         src_bytes = unique_id()[-2:]
 
         msg_bytes = bytearray(6 + len(message))
@@ -98,7 +99,7 @@ class BadgeRadio:
         sx.send(msg_bytes)
 
     def _handle_packet(self, packet) -> None:
-        """ 
+        """
         Directs to target app API
         TODO: implement app dispatching in internal_os
         """
@@ -136,7 +137,7 @@ class BadgeRadio:
         if self._receive_queue:
             return self._receive_queue.pop(0)
         return None
-    
+
     def get_send_queue_size(self) -> int:
         """
         Returns the number of packets in the send queue.
@@ -151,7 +152,7 @@ class BadgeRadio:
         elapsed_time = time.ticks_diff(current_time, self.last_tx_time)
         ms_per_packet = 1500
         return max(0, (ms_per_packet - elapsed_time) / 1000.0)
-    
+
     def add_to_tx_queue(self, dest: int, app_number: int, data: bytes):
         """
         Adds a packet to the transmit queue.
@@ -167,7 +168,7 @@ class BadgeRadio:
                 packet = self.get_next_packet()
                 if packet:
                     logging.info(f"Dispatching packet: {packet}")
-                    self.internal_os.apps.dispatch_packet(packet)        
+                    self.internal_os.apps.dispatch_packet(packet)
 
             if len(self._transmit_queue) > 0:
                 # handle sending packets
