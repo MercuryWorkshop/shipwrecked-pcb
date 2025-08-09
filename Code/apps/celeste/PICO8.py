@@ -1,3 +1,5 @@
+import logging
+
 class PICO8():
   def __init__(self, cart):
     self._btn_state = 0
@@ -22,13 +24,17 @@ class PICO8():
 
   # load game from cart
   def load_game(self, cart):
+    logging.info(f"celeste classic: p8 load_game");
     self._cart = cart
     self._game = self._cart(self)
+    logging.info(f"celeste classic: p8 _cart");
     self._memory = {
-      'map': [int(self._game.map_data[i:i + 2][::1 if i < 8192 else -1], 16) for i in range(0, len(self._game.map_data), 2)],
-      'flags': [int(self._game.flag_data[i:i + 2], 16) for i in range(0, len(self._game.flag_data), 2)]
+      'map': self._game.map_data,
+      'flags': self._game.flag_data,
     }
+    logging.info(f"celeste classic: p8 _flags");
     self._game._init()
+    logging.info(f"celeste classic: p8 _init");
 
   # reload the current cart
   def reset(self):
