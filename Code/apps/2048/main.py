@@ -1,7 +1,6 @@
 import badge
 import random
 
-import copy
 try:
     from typing import Tuple, List
 except ImportError:
@@ -140,7 +139,7 @@ class Game2048:
             "right": self._move_right,
         }
         for d in dir_map:
-            snapshot_grid = copy.deepcopy(self.grid)
+            snapshot_grid = [row[:] for row in self.grid]
             snapshot_score = self.score
             moved, _ = dir_map[d]()
             if moved:  # a move is possible; revert and return False
@@ -151,7 +150,7 @@ class Game2048:
 
     def get_grid(self) -> List[List[int]]:
         """Return a deep copy of the board."""
-        return copy.deepcopy(self.grid)
+        return [row[:] for row in self.grid]
 
     def get_score(self) -> int:
         """Return the current score."""
@@ -291,12 +290,14 @@ class BadgeRenderer(Renderer):
         for r in range(len(grid)):
             for c in range(len(grid[r])):
                 value = grid[r][c]
+                # Draw the cell with its value
+                x = c * cell_size
+                y = (r * cell_size) + 32  # Offset by 32 pixels for the header
                 if value > 0:
-                    # Draw the cell with its value
-                    x = c * cell_size
-                    y = r * cell_size
                     badge.display.rect(x, y, cell_size, cell_size, 0)  # Draw border
                     badge.display.nice_text(str(value), x + 4, y + 4, font=24, color=0)
+                else:
+                    badge.display.rect(x, y, cell_size, cell_size, 0)
         # Display the score at the top
         badge.display.nice_text(f"Score: {score}", 0, 0, font=18, color=0)
         badge.display.show()
