@@ -9,6 +9,7 @@ interface ConfigurationAttrs {
     userName: string;
     userHandle: string;
     userPronouns: string;
+    badgeId: string;
 }
 
 export default function BadgeConfigurator() {
@@ -17,6 +18,7 @@ export default function BadgeConfigurator() {
         userName: "",
         userPronouns: "",
         userHandle: "",
+        badgeId: "",
     });
     const [status, setStatus] = useState<string>("");
     const [firmware, setFirmware] = useState<{ files: { path: string, content: Uint8Array }[], folders: string[] } | 'NOTFETCHED' | 'UPTODATE'>('NOTFETCHED');
@@ -24,7 +26,7 @@ export default function BadgeConfigurator() {
 
     async function scanForApps(files: any[]) {
         if (!mp) return;
-        
+
         const appsFolder = files.find(f => f.path === "/apps" && f.type === "folder");
         if (!appsFolder) return;
 
@@ -57,7 +59,7 @@ export default function BadgeConfigurator() {
             if (isConnected && mp) {
                 const files: any[] = await mp.listFiles();
                 console.log("Files on device:", files);
-                
+
                 // Scan for apps
                 await scanForApps(files);
 
@@ -79,7 +81,7 @@ export default function BadgeConfigurator() {
                     const versionData = await versionResponse.json();
                     const latestVersion = atob(versionData.content);
                     console.log("Latest firmware version:", latestVersion);
-                    
+
                     // get the version on the device
                     setStatus("Checking device firmware version...");
                     const deviceVersion = await mp.downloadFileToString("/VERSION");
@@ -93,7 +95,7 @@ export default function BadgeConfigurator() {
                         const releasesResponse = await fetch("https://api.github.com/repos/mpkendall/shipwrecked-pcb/releases/latest");
                         const releaseData = await releasesResponse.json();
                         const firmwareAsset = releaseData.assets.find((asset: any) => asset.name === "firmware.zip");
-                        
+
                         if (!firmwareAsset) {
                             throw new Error("Firmware zip not found in latest release");
                         }
@@ -113,7 +115,20 @@ export default function BadgeConfigurator() {
 
     function handleSave(): void {
         if (isConnected && mp) {
-            const configData = JSON.stringify(config, null, 2);
+            // Normalize badgeId so that it always is "0x" followed by 4 hex digits.
+            let badgeId = config.badgeId.trim();
+            if (badgeId.startsWith("0x") || badgeId.startsWith("0X")) {
+                badgeId = badgeId.slice(2);
+            }
+            // Ensure it is 4 digits (pad with leading zeros if necessary)
+            badgeId = badgeId.padStart(4, "0");
+            // Convert to lower case and prepend "0x"
+            const normalizedBadgeId = "0x" + badgeId.toLowerCase();
+
+            // Create a new config object with the normalized badgeId
+            const newConfig = { ...config, badgeId: normalizedBadgeId };
+
+            const configData = JSON.stringify(newConfig, null, 2);
             console.log("Saving configuration:", configData);
             setStatus("Saving configuration...");
             mp.uploadFileFromString("/config.json", configData)
@@ -156,11 +171,11 @@ export default function BadgeConfigurator() {
         const JSZip = (await import('jszip')).default;
         const zip = new JSZip();
         const zipContent = await zip.loadAsync(zipBlob);
-        
+
         // Extract files and folders
         const firmwareFolders: string[] = [];
         const firmwareFilesData: { path: string, content: Uint8Array }[] = [];
-        
+
         for (const [path, file] of Object.entries(zipContent.files)) {
             if (file.dir) {
                 firmwareFolders.push("/" + path.slice(0, -1)); // remove trailing slash
@@ -268,6 +283,18 @@ export default function BadgeConfigurator() {
             </div>
 
             <div>
+                <label>
+                    Badge ID:
+                    <input
+                        type="text"
+                        value={config.badgeId}
+                        disabled={!isConnected}
+                        onChange={(e) => setConfig({ ...config, badgeId: e.target.value })}
+                    />
+                </label>
+            </div>
+
+            <div>
                 <button onClick={handleSave}>Save To Badge</button>
             </div>
             </div>
@@ -283,8 +310,8 @@ export default function BadgeConfigurator() {
     const customOperations = (
         <div>
                 <button onClick={handleWipeBadge}>Wipe Badge</button>
-                <input 
-                    type="file" 
+                <input
+                    type="file"
                     accept=".zip"
                     onChange={handleCustomFirmware}
                     style={{ display: 'none' }}
@@ -303,7 +330,7 @@ export default function BadgeConfigurator() {
             {isConnected && firmware === 'UPTODATE' ? fields : null}
             {isConnected && firmware !== 'UPTODATE' ? firmwareUpdate : null}
             {isConnected && firmware === 'UPTODATE' ? (
-                <AppManager 
+                <AppManager
                     apps={apps}
                     onAppListChange={() => {
                         if (mp) {
