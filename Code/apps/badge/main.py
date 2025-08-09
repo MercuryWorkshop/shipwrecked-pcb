@@ -1,6 +1,10 @@
 import badge
 
 class App(badge.BaseApp):
+    def __init__(self):
+        self.old_button_l = False
+        self.led_on = False
+
     def on_open(self) -> None:
         me = badge.contacts.my_contact()
         if not me:
@@ -10,10 +14,10 @@ class App(badge.BaseApp):
             return
         self.logger.info(f"Rendering contact info for {me}")
         self.render_display(me)
-    
+
     def render_display(self, contact) -> None:
         badge.display.fill(1)  # Clear the display
-        
+
         # text rendering: decide on a font size and line breaks for the name
         # if the name has no spaces, go as low as font size 32 before inserting hyphens where needed
         # if the name has spaces, break at the middlemost space first, then the rest of the spaces, then insert hyphens as needed
@@ -29,7 +33,7 @@ class App(badge.BaseApp):
         badge.display.nice_text(f"0x{contact.badge_id:0>4x}", 200-badge.display.nice_fonts[24].max_width*6, name_height, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
         badge.display.nice_text('\n'.join(handle_wrapped), 0, name_height + 24, font=24, color=0, rot=0, x_spacing=0, y_spacing=0)
         badge.display.show()
-    
+
     def decide_name_size(self, name: str, y_space_available=130):
         """
         Decide the best size and line breaks for the name.
@@ -80,4 +84,11 @@ class App(badge.BaseApp):
 
 
     def loop(self) -> None:
-        pass
+        if badge.input.get_button(badge.input.Buttons.SW4):
+            self.old_button_l = True
+        else:
+            if self.old_button_l:
+                badge.buzzer.tone(442, 0.05)
+                self.led_on = not self.led_on
+                badge.utils.set_led(self.led_on)
+            self.old_button_l = False
