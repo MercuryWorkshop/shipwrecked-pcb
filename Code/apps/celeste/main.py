@@ -5,11 +5,11 @@ from apps.celeste.Celeste import Celeste
 
 class App(badge.BaseApp):
     def on_open(self) -> None:
-        self.logger.info(f"celeste classic: mem_free {}", gc.mem_free());
+        self.logger.info(f"celeste classic: mem_free {gc.mem_free()}");
         gc.collect()
-        self.logger.info(f"celeste classic: mem_free after {}", gc.mem_free());
+        self.logger.info(f"celeste classic: mem_free after {gc.mem_free()}");
         self.p8 = PICO8(Celeste)
-        self.logger.info(f"celeste classic: mem_free init {}", gc.mem_free());
+        self.logger.info(f"celeste classic: mem_free init {gc.mem_free()}");
 
     def loop(self) -> None:
         l = badge.input.get_button(badge.input.Buttons.SW11);
@@ -22,4 +22,4 @@ class App(badge.BaseApp):
         self.p8.step();
 
         badge.display.fill(1)
-        badge.display.nice_text(str(p8.game), 0, 0, font=badge.display.nice_fonts[24], color=0, rot=0, x_spacing=0, y_spacing=0);
+        badge.display.nice_text(str(self.p8.game), 0, 0, font=badge.display.nice_fonts[24], color=0, rot=0, x_spacing=0, y_spacing=0);
