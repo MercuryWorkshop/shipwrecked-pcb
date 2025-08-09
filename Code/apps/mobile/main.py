@@ -214,20 +214,22 @@ class App(badge.BaseApp):
         This async function runs on the OS thread - make sure it yields properly.
         """
         # siren the buzzer - for loop with audible tones
-        badge.buzzer.tone(523, 0.5)  # C5
-        await asyncio.sleep(0.1)
-        badge.buzzer.tone(392, 0.25)  # G4
+        badge.buzzer.tone(392, 0.1)  # G4
+        await asyncio.sleep(0.025)
+        badge.buzzer.tone(392, 0.1)  # G4
+        await asyncio.sleep(0.025)
+        badge.buzzer.tone(392, 0.1)  # G4
+        await asyncio.sleep(0.025)
+        badge.buzzer.tone(311, 1.5)  # D#4
+        await asyncio.sleep(0.25)
+        badge.buzzer.tone(350, 0.1)  # F4
+        await asyncio.sleep(0.025)
+        badge.buzzer.tone(350, 0.1)  # F4
+        await asyncio.sleep(0.025)
+        badge.buzzer.tone(350, 0.1)  # F4
+        await asyncio.sleep(0.025)
+        badge.buzzer.tone(293, 1.5)  # D4
         await asyncio.sleep(0.05)
-        badge.buzzer.tone(392, 0.25)  # G4
-        await asyncio.sleep(0.05)
-        badge.buzzer.tone(415, 0.5)  # G#4
-        await asyncio.sleep(0.1)
-        badge.buzzer.tone(392, 0.5)  # G4
-        await asyncio.sleep(0.6)
-        badge.buzzer.tone(493, 0.5)  # B4
-        await asyncio.sleep(0.1)
-        badge.buzzer.tone(523, 0.5)  # C5
-        await asyncio.sleep(0.1)
         badge.buzzer.no_tone()
 
     async def notify(self) -> None:
