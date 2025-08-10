@@ -91,7 +91,6 @@ class BadgeDisplay:
         self.reset_idle_timer()
         with LockWrapper(self.display_lock):
             if full:
-                # force a full refresh every 10 calls or if explicitly requested
                 self.logger.debug("Force refreshing display")
                 self.display.display()
             else:

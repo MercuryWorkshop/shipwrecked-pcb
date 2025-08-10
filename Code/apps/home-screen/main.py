@@ -18,6 +18,8 @@ class App(badge.BaseApp):
         self.button_time = utime.ticks_ms()
 
     def on_open(self) -> None:
+        badge.display.fill(1)
+        internal_os.display.display.display_base_image()
         self.logger.info("Home screen opening...")
         self.cursor_pos = 0
         self.render_home_screen()
@@ -78,7 +80,7 @@ class App(badge.BaseApp):
             app_y = (i // 3) * 78 + 12
             self.draw_app_icon(app, app_x, app_y, self.cursor_pos == i)
         self.logger.debug(f"Cursor position: {self.cursor_pos}, total apps: {len(self.get_apps_to_show())}")
-        internal_os.display.show(full=True)
+        badge.display.show()
 
     def get_apps_to_show(self):
         apps = list(filter(lambda app: app.app_path != "/apps/home-screen", internal_os.apps.registered_apps))
@@ -109,7 +111,8 @@ class App(badge.BaseApp):
         Launch the specified app.
         :param app_repr: The AppRepr instance representing the app to launch.
         """
-        internal_os.display.show(full=True)
+        badge.display.fill(1)
+        internal_os.display.display.display_base_image()
         self.logger.info(f"Launching app: {app_repr.display_name}")
         asyncio.create_task(internal_os.apps.launch_app(app_repr))
         while internal_os.apps.fg_app_running:

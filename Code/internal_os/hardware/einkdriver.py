@@ -237,7 +237,7 @@ class EPD:
         self.wait_until_idle()
 
         # Set LUT
-        self.set_lut(WF_FULL_1IN54)
+        self.set_lut(WF_PARTIAL_1IN54_0)
 
     def clear(self):
         """Clear the display with white"""

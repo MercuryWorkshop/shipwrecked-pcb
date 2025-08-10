@@ -42,8 +42,9 @@ def show(force_full_refresh: bool = False) -> None:
 
 
     internal_os.display_refresh_count += 1
-    # every 10th call, or if explicitly requested, do a full refresh
-    if internal_os.display_refresh_count % 10 == 0:
+    # every 4th call, or if explicitly requested, do a full refresh
+    # todo: maybe calculate the delta of changed pixels and only full refresh if the delta is above a certain threshold?
+    if internal_os.display_refresh_count % 4 == 0:
         internal_os.display.show(full=True)
     else:
         internal_os.display.show(full=force_full_refresh)
