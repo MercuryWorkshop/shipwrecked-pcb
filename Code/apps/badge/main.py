@@ -10,7 +10,7 @@ class App(badge.BaseApp):
         if not me:
             badge.display.fill(1)
             badge.display.nice_text("No contact\ninfo. Please\nadd yourself\nto contacts\nwith the\nwebflasher.", 0, 0, font=32)
-            badge.display.show()
+            badge.display.show(force_full_refresh=True)
             return
         self.logger.info(f"Rendering contact info for {me}")
         self.render_display(me)
@@ -43,7 +43,7 @@ class App(badge.BaseApp):
 
         badge.display.nice_text(f"Badge ID: 0x{contact.badge_id:0>4x}", 0, 170, font=18, color=0, rot=0, x_spacing=0, y_spacing=0)
 
-        badge.display.show()
+        badge.display.show(force_full_refresh=True)
 
     def decide_name_size(self, name: str, y_space_available=130):
         """

@@ -1,5 +1,6 @@
 import badge
 import utime
+import framebuf
 
 # NOTE: MOST APPS RFC2119-SHOULD-NOT NEED THESE IMPORTS.
 # home-screen is messing with app launches, so it's special.
@@ -16,6 +17,9 @@ class App(badge.BaseApp):
         self.old_button_b = False
         self.old_button_l = False
         self.button_time = utime.ticks_ms()
+        self.already_drew_icons = False
+        self.cached_icons = []
+        self.missing_icon = badge.display.import_pbm("/missingtex.pbm")
 
     def on_open(self) -> None:
         badge.display.fill(1)
@@ -23,6 +27,7 @@ class App(badge.BaseApp):
         self.logger.info("Home screen opening...")
         self.cursor_pos = 0
         self.render_home_screen()
+        self.already_drew_icons = True
 
     def beep(self) -> None:
         """
@@ -78,7 +83,7 @@ class App(badge.BaseApp):
                 continue
             app_x = (i % 3) * 66
             app_y = (i // 3) * 78 + 12
-            self.draw_app_icon(app, app_x, app_y, self.cursor_pos == i)
+            self.draw_app_icon(app, app_x, app_y, self.cursor_pos == i, i)
         self.logger.debug(f"Cursor position: {self.cursor_pos}, total apps: {len(self.get_apps_to_show())}")
         badge.display.show()
 
@@ -98,11 +103,19 @@ class App(badge.BaseApp):
         else:
             return other_apps
 
-    def draw_app_icon(self, app_repr, x, y, selected):
-        fb = badge.display.import_pbm(app_repr.logo_path)
+    def draw_app_icon(self, app_repr, x, y, selected, index):
+        fb = None
+        if index < len(self.cached_icons):
+            fb = self.cached_icons[index]
+        else:
+            if app_repr.logo_path is None:
+                fb = self.missing_icon
+            else:
+                fb = badge.display.import_pbm(app_repr.logo_path)
+            self.cached_icons.append(fb)
         badge.display.blit(fb, x+9, y)
         if selected:
-            badge.display.rect(x+7, y-2, 52, 52, 0)
+            badge.display.rect(x+6, y-3, 54, 54, 0)
         for i, frag in enumerate([app_repr.display_name[j:j+7] for j in range(0, len(app_repr.display_name), 7)]):
             badge.display.text(frag, x+5, y+50+i*9, 0)
 

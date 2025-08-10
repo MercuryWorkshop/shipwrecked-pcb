@@ -34,7 +34,7 @@ def show(force_full_refresh: bool = False) -> None:
     """
     Push the contents of the internal framebuffer to the display.
     NOTE: YOUR DRAWING WILL NOT DO ANYTHING UNTIL YOU CALL THIS FUNCTION!
-    On CFW, this will only refresh the display every 10th call or if explicitly requested.
+    On CFW, this will only refresh the display every 8 times it is called, or if explicitly requested with the force_full_refresh parameter.
     OFW will always refresh the display, so if your app targets CFW, please try managing your display updates to avoid ghosting.
     """
     if not _is_display_allowed():
@@ -42,9 +42,10 @@ def show(force_full_refresh: bool = False) -> None:
 
 
     internal_os.display_refresh_count += 1
-    # every 4th call, or if explicitly requested, do a full refresh
+    print(f"Display refresh count: {internal_os.display_refresh_count}")
+    # every 8 calls, or if explicitly requested, do a full refresh
     # todo: maybe calculate the delta of changed pixels and only full refresh if the delta is above a certain threshold?
-    if internal_os.display_refresh_count % 4 == 0:
+    if internal_os.display_refresh_count % 8 == 0:
         internal_os.display.show(full=True)
     else:
         internal_os.display.show(full=force_full_refresh)

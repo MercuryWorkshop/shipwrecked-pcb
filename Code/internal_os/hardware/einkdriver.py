@@ -277,9 +277,10 @@ class EPD:
 
         # Display refresh
         if full_refresh:
-            self.display_frame()
+            self.display_base_image()
         else:
-            self.display_partial_frame()
+            print("Partial refresh")
+            self.display_frame()
 
     def display_base_image(self, buffer=None):
         """
