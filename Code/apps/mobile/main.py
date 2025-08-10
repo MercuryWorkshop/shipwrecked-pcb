@@ -19,6 +19,10 @@ print(f"Free memory after imports: {gc.mem_free()} bytes")
 gc.collect()  # Collect garbage again after imports
 print(f"Free memory after second collect: {gc.mem_free()} bytes")
 
+from internal_os.internalos import InternalOS
+
+internal_os = InternalOS.instance()
+
 with open(badge.utils.get_data_dir() + "/announcement_key.txt", "r") as f:
     announcement_key_raw = f.read()
     vk = PublicKey.fromCompressed(announcement_key_raw)
@@ -105,6 +109,15 @@ class App(badge.BaseApp):
         self.last_button = False
         self.received_message = None
 
+    def send_message(self, message):
+        message_bytes = message.encode("utf-8")
+        message_bytes = message_bytes + b"\0" * (179 - len(message_bytes))
+
+        timestamp = int(time.time())
+        full_msg = struct.pack(MSG_FMT, 0, b'\x00' * 32, b'\x00' * 32, timestamp, len(message), message_bytes)
+
+        internal_os.radio._send_msg(b'\xff\xff', b'\x00\x0B', full_msg)
+
     def get_last_displayed_message_timestamp(self) -> int:
         try:
             with open(badge.utils.get_data_dir() + "/last_displayed_timestamp.txt", "r") as f:
@@ -149,7 +162,7 @@ class App(badge.BaseApp):
         # else:
         #     self.last_button = False
         if badge.input.get_button(badge.input.Buttons.SW11):
-            send_message(f"Hello from {internal_os.get_badge_id_int()}!")
+            self.send_message(f"Hello from 0x{unique_id().hex()}!")
 
         if self.received_message:
             self.logger.info(f"Displaying message: {self.received_message}")
@@ -258,15 +271,6 @@ class App(badge.BaseApp):
         if last_message is None:
             return message.is_signature_valid()
         return message.creation_timestamp > last_message.creation_timestamp and message.is_signature_valid()
-
-    def send_message(self, message):
-        message_bytes = message.encode("utf-8")
-        message_bytes = message_bytes.ljust(179, b"\0")
-
-        timestamp = int(time.time())
-        full_msg = struct.pack(MSG_FMT, 0, range(32), range(32), timestamp, len(message), message_bytes)
-
-        badge.radio._send_msg(b'\xff\xff', b'\x00\x0B', full_msg)
 
     def on_packet(self, packet: badge.radio.Packet, is_foreground: bool) -> None:
         # NOTE to people looking at this for inspiration:

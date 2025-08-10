@@ -124,8 +124,6 @@ class App(badge.BaseApp):
         Launch the specified app.
         :param app_repr: The AppRepr instance representing the app to launch.
         """
-        badge.display.fill(1)
-        internal_os.display.display.display_base_image()
         self.logger.info(f"Launching app: {app_repr.display_name}")
         asyncio.create_task(internal_os.apps.launch_app(app_repr))
         while internal_os.apps.fg_app_running:

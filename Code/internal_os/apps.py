@@ -5,6 +5,7 @@ except ImportError:
     pass
 import asyncio
 import sys
+from internal_os.internalos import InternalOS
 from internal_os.baseapp import BaseApp
 from internal_os.hardware.display import BadgeDisplay
 from internal_os.hardware.buttons import BadgeButtons
@@ -168,7 +169,7 @@ class AppManager:
 
         self.registered_apps: List[AppRepr] = []
         self.scan_for_apps()
-    
+
     def get_current_app_repr(self) -> AppRepr | None:
         """
         Get the AppRepr of the app that calls this, taking into account whether it's foreground or background.
@@ -222,7 +223,7 @@ class AppManager:
                 # App has been removed
                 self.registered_apps.remove(known_apps[known_app_dir])
                 self.logger.info(f"Removed app: {known_app_dir}")
-    
+
     async def scan_forever(self, interval: float = 5.0) -> None:
         """
         Continuously scan for apps at a specified interval.
@@ -231,7 +232,7 @@ class AppManager:
         while True:
             self.scan_for_apps()
             await asyncio.sleep(interval)
-    
+
     async def launch_app(self, app_repr: AppRepr) -> None:
         """
         Launch the specified app.
@@ -244,25 +245,27 @@ class AppManager:
             # The app should see that it's supposed to stop because app_running is set to False.
             # we'll know when that happens because it will release the app_lock.
             try:
-                await acquire_lock(self.fg_app_lock, timeout=5.0)
+                await acquire_lock(self.fg_app_lock, timeout=10.0)
             except TimeoutError as e:
                 self.logger.critical(f"Failed to stop the currently running app within timeout: {e}")
-                self.logger.critical(f"Soft-resetting the badge in order to recover.")
+                self.logger.critical(f"Resetting the badge in order to recover.")
                 self.logger.critical(f"This is caused by a bug in {self.selected_fg_app.display_name if self.selected_fg_app else 'the currently running app'} (usually an infinite loop).")
                 self.logger.critical(f"Please report this bug to the app's developers.")
-                machine.soft_reset()  # Reset the badge to recover from the stuck app
+                machine.hard_reset()  # Reset the badge to recover from the stuck app
                 return
             # once we have it, we can release it - the app thread should have stopped itself
             self.fg_app_lock.release()
-        
+
         # Now we can start the new app
         self.selected_fg_app = app_repr
         self.logger.info(f"Creating app thread for: {app_repr.display_name} from {app_repr.app_path}")
         self.fg_app_running = True
+        InternalOS.instance().display.fill(1)
+        InternalOS.instance().display.display.display_base_image()
         # mem_info(True)
         _thread.stack_size(8192)  # Set a larger stack size for the app thread
         _thread.start_new_thread(app_thread, (app_repr, self))
-    
+
     def get_app_by_path(self, app_path: str) -> Optional[AppRepr]:
         """
         Get an app by its path.
@@ -273,7 +276,7 @@ class AppManager:
             if app.app_path == app_path:
                 return app
         return None
-    
+
     def dispatch_packet(self, packet: Packet) -> None:
         """
         Dispatch a packet to an app, waking it if necessary.
@@ -329,4 +332,3 @@ class AppManager:
                     self.logger.error("Home app not found. Cannot return to home screen.")
                     continue
                 await self.launch_app(home_app)
-

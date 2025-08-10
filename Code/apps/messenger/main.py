@@ -8,6 +8,9 @@ import os
 import utime
 import asyncio
 import time
+from internal_os.internalos import InternalOS
+
+internal_os = InternalOS.instance()
 print(f"Free memory before import: {gc.mem_free()} bytes")
 gc.collect()  # Collect garbage to free up memory
 print(f"Free memory after collect: {gc.mem_free()} bytes")
@@ -169,12 +172,11 @@ class App(badge.BaseApp):
         elif badge.input.get_button(badge.input.Buttons.SW4):
             message = "HACK THE PLANET"
             message_bytes = message.encode("utf-8")
-            message_bytes = message_bytes.ljust(179, b"\0")
+            message_bytes = message_bytes + b"\0" * (179 - len(message_bytes))
 
             timestamp = int(time.time())
-            full_msg = struct.pack(MSG_FMT, 0, range(32), range(32), timestamp, len(message), message_bytes)
-
-            badge.radio._send_msg(b'\xff\xff', b'\x00\x0B', full_msg)
+            full_msg = struct.pack(MSG_FMT, 0, b'\x00' * 32, b'\x00' * 32, timestamp, len(message), message_bytes)
+            internal_os.radio._send_msg(b'\xff\xff', b'\x00\x0B', full_msg)
 
     def wrap_message(self, message: str, size: int) -> list[str]:
         max_chars_per_line = 16 if size == 24 else 25
