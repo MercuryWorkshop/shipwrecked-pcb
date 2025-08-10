@@ -298,12 +298,17 @@ class BadgeRenderer(Renderer):
                 y = (r * cell_size) + 32  # Offset by 32 pixels for the header
                 if value > 0:
                     badge.display.rect(x, y, cell_size, cell_size, 0)  # Draw border
-                    badge.display.nice_text(str(value), x + 4, y + 4, font=24, color=0)
+                    if value < 100:
+                        badge.display.nice_text(str(value), x + 4, y + 4, font=24, color=0)
+                    elif value < 1000:
+                        badge.display.nice_text(str(value), x + 2, y + 4, font=18, color=0)
+                    else:
+                        badge.display.nice_text(str(value), x + 1, y + 4, font=12, color=0)
                 else:
                     badge.display.rect(x, y, cell_size, cell_size, 0)
         # Display the score at the top
         badge.display.nice_text(f"Score: {score}", 0, 0, font=18, color=0)
-        badge.display.show()
+        badge.display.show(force_full_refresh=True)
 
 
 # class TerminalRenderer(Renderer):
