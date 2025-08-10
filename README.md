@@ -6,6 +6,11 @@ Shipwrecked PCB Badges
 # MercuryWorkshop/shipwrecked-pcb
 CFW (custom firmware) for the Shipwrecked PCB Badges.
 
+## Installation
+
+- Install `mpy-cross` and `mpremote` using pip
+- In ./Code, run `make run PORT=/dev/foo` (replace with your port)
+
 ## Additions
 - Games (2048, Celeste Classic)
 - Redesigned badge app

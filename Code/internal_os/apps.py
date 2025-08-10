@@ -5,7 +5,6 @@ except ImportError:
     pass
 import asyncio
 import sys
-from internal_os.internalos import InternalOS
 from internal_os.baseapp import BaseApp
 from internal_os.hardware.display import BadgeDisplay
 from internal_os.hardware.buttons import BadgeButtons
@@ -260,8 +259,7 @@ class AppManager:
         self.selected_fg_app = app_repr
         self.logger.info(f"Creating app thread for: {app_repr.display_name} from {app_repr.app_path}")
         self.fg_app_running = True
-        InternalOS.instance().display.fill(1)
-        InternalOS.instance().display.display.display_base_image()
+
         # mem_info(True)
         _thread.stack_size(8192)  # Set a larger stack size for the app thread
         _thread.start_new_thread(app_thread, (app_repr, self))

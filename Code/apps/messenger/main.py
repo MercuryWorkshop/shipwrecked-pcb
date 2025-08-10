@@ -287,6 +287,8 @@ class App(badge.BaseApp):
             from internal_os.internalos import InternalOS
             import asyncio
             internal_os = InternalOS.instance()
+            internal_os.display.fill(1)
+            internal_os.display.display.display_base_image()
             asyncio.create_task(internal_os.apps.launch_app(internal_os.apps.get_current_app_repr()))
         else:
             self.logger.info(f"Received packet in foreground app")

@@ -125,6 +125,8 @@ class App(badge.BaseApp):
         :param app_repr: The AppRepr instance representing the app to launch.
         """
         self.logger.info(f"Launching app: {app_repr.display_name}")
+        internalos.InternalOS.instance().display.fill(1)
+        internalos.InternalOS.instance().display.display.display_base_image()
         asyncio.create_task(internal_os.apps.launch_app(app_repr))
         while internal_os.apps.fg_app_running:
             utime.sleep(0.1)  # Wait for the app machinery to tell us to stop
